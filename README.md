@@ -79,16 +79,57 @@ $ pyenv install anaconda3-4.4.0
 $ pyenv install anaconda3-5.3.1
 ```
 
-わたしの環境ではそれぞれ10分ぐらいかかった。どのバージョンのPythonがインストールされたかを確認しよう。
+わたしの環境ではそれぞれ10分ぐらいかかった。
+
+コマンドラインで`python`コマンドを投入した時にどのバージョンが使われるかを確認しよう。
 
 ```
 $ pyenv versions
+* system (set by /Users/kazuakiurayama/.pyenv/version)
+  anaconda3-4.4.0
+  anaconda3-5.3.1
 ```
 
-コマンドラインで`python`コマンドを投入した時にどのバージョンが使われるかを切り替えます。
+`system`に*がついています。macOSにプレインストールされたものが選択がされてい流。追加したanacondaが選択されていません。これではつまらない。
+
+`pyenv global バージョン`コマンドで設定を切り替えます。今からはanaconda3-4.4.0を使うことにしましょう。
 
 ```
 $ pyenv global anaconda3-4.4.0
-
+:~
 $ pyenv versions
+  system
+* anaconda3-4.4.0 (set by /Users/kazuakiurayama/.pyenv/version)
+  anaconda3-5.3.1
+```
+
+anaconda3-4.4.0に切り替わりました。
+
+なお特定のディレクトリにcdしてから `pyenv local anaconda3-5.3.1` とやればそのディレクトリのしたではglobalに指定したのと別のPython環境を使うことができます。
+
+### プロジェクトのためにディレクトリを作る
+
+本プロジェクトのためにディレクトリを作ります。場所は適宜。mkdirで。
+
+```
+$ cd
+$ cd github
+$ mkdir PythonProjectTemplateLevel1
+$ cd PythonProjectTemplateLevel1
+$ pwd
+~/github/PythonProjectTemplateLevel1
+```
+
+以下の記述では `~/github/PythonProjectTemplateLevel1` を手短に `$repo` と書くことにします。
+
+### pipenvで仮想環境を作る
+
+[pipenv](https://pypi.org/project/pipenv/) はPython仮想環境を作るツールです。下記の記事を参考にした。
+
+- [Qiita Pipenvを使ったPython開発まとめ](https://qiita.com/y-tsutsu/items/54c10e0b2c6b565c887a)
+
+pyenvで選択したanacondaにpipenvをインストールします。
+
+```
+$ pip install pipenv
 ```
