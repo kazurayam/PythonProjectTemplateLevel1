@@ -168,7 +168,7 @@ $ tree .
 ├── README.md
 └── pyproject
     ├── src
-    └── test
+    └── tests
 ```
 
 サブフォルダ `pyproject` を作りました。このフォルダの下にPythonによるアプリケーションを開発する環境を作ることにします。なぜ`$repo`の下にサブフォルダを作ったかというと、Pythonではない別のテクノロジーを用いるコードやライブラリ類（たとえばExcelファイルやchromedriverのバイナリやシェルスクリプトとか）のために別のサブフォルダを作れるようにという考えです。別種のテクノロジーを用いる複数のサブフォルダをまとめて一つのGitレポジトリにまとめて管理できるようにしました。
@@ -447,9 +447,168 @@ IntelliJ IDEAを起動し、`PythonProjectTemplateLevel1`をプロジェクト�
 
 ![select_Project_SDK](docs/images/select_Project_SDK.png)
 
-これでIntelliJ IDEAの設定は完了だ。IDEAのなかで `PythonProjecdtTemplateLevel1` プロジェクトをそれ専用のPython仮想環境を使って開発することができる。
+これでIntelliJ IDEAにSDKを登録する作業は完了だ。
+
+### ユニットテストを実行する
+
+`PythonProjectTemplateLevel1`プロジェクトのためにPython仮想環境を準備し、IntelliJ IDEAを設定することができた。ではPythonコードを一つ書いて、ユニットテストを実行してみよう。
+
+下記の記事を参照した。
+
+- [pytest入門 - 闘うITエンジニアの覚え書き](https://www.magata.net/memo/index.php?pytest%C6%FE%CC%E7#q4177cd9)
+
+#### pytestをインストールする
+
+まずpytestを仮想環境にインストールしよう。
+
+```
+$repos/pyproject (main *)
+$ pipenv install pytest --dev
+```
+
+#### ユニットテストのコード
+
+アプリケーションのコード `$repos/pyroject/src/mypkg/greeting.py` を書いた。
+
+```
+def hello(name):
+    return 'Hello, ' + name
+```
+
+ユニットテストのコード `$repos/pyproject/tests/mypkg/test_greeting.py` を書いた。
+
+```
+import pytest
+
+from mypkg import greeting
+
+def test_hello():
+    assert greeting.hello('World') == 'Hello, World!'
+```
+
+#### テストコードを格納するためにディレクトリ構造をどうするか
+
+ディレクトリ構造を下記のようにした。アプリケーション本体のコードを `$repos/pyroject/src` ディレクトリに格納し、ユニットテストのコードを `$repos/pyproject/tests` ディレクトリに格納している。このほうがきれいだから。
+
+`$repos/pyproject/src/mypkg/__init__.py` を作っている。これによって `mypkg` という名前のPythonパッケージを定義したつもり。
+
+```
+$ tree .
+.
+└── pyproject
+    ├── Pipfile
+    ├── Pipfile.lock
+    ├── src
+    │   └── mypkg
+    │       ├── __init__.py
+    │       └── greeting.py
+    └── tests
+        ├── __init__.py
+        └── mypkg
+            ├── __init__.py
+            └── test_greeting.py
+```
+
+`tests/__init__.py`ファイルが作ってあることに注意。これには理由がある。あとで説明する。``
 
 
+#### コマンドラインでpytest実行時にimportがエラーになるで問題
+
+コマンドラインでpytestを実行してみた。
+
+```
+:~/github/PythonProjectTemplateLevel1/pyproject (master *+)
+$ pipenv run pytest
+Loading .env environment variables...
+============================= test session starts ==============================
+platform darwin -- Python 3.8.5, pytest-6.2.2, py-1.10.0, pluggy-0.13.1
+rootdir: /Users/myname/github/PythonProjectTemplateLevel1/pyproject
+collected 0 items / 1 error                                                    
+
+==================================== ERRORS ====================================
+___________________ ERROR collecting tests/test_greeting.py ____________________
+ImportError while importing test module '/Users/myname/github/PythonProjectTemplateLevel1/pyproject/tests/test_greeting.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/importlib/__init__.py:127: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests/test_greeting.py:1: in <module>
+    from mypkg import greeting
+E   ModuleNotFoundError: No module named 'mypkg'
+=========================== short test summary info ============================
+ERROR tests/test_greeting.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+=============================== 1 error in 0.12s ===============================
+```
+
+`test_generating.py` の1行目に書いてある `from mypkg import greeting` がエラーになっている。`mypkg`パッケージを見つけることができていない。Pythonの `sys.path` のなかに `$repos/pyproject/src` ディレクトリが入っていないから、`mypkg`パッケージを見つけることができないのだ。
+
+pytestは `tests/conftest.py` ファイルがあれば各テストを実行する前処理として自動的に実行してくれる。その中で `sys.path` を更新しよう。
+
+```
+import sys 
+import os
+
+sys.path.append(os.path.abspath(os.path.dirname(os.path.abspath(__file__)) + "/../src/"))
+``` 
+
+もう一度テストを実行してみよう。
+```
+:~/github/PythonProjectTemplateLevel1/pyproject (master *+)
+$ pipenv run pytest
+Loading .env environment variables...
+============================= test session starts ==============================
+platform darwin -- Python 3.8.5, pytest-6.2.2, py-1.10.0, pluggy-0.13.1
+rootdir: /Users/kazuakiurayama/github/PythonProjectTemplateLevel1/pyproject
+collected 1 item                                                               
+
+tests/test_greeting.py F                                                 [100%]
+
+=================================== FAILURES ===================================
+__________________________________ test_hello __________________________________
+
+    def test_hello():
+>       assert greeting.hello('World') == 'Hello, World!'
+E       AssertionError: assert 'Hello, World' == 'Hello, World!'
+E         - Hello, World!
+E         ?             -
+E         + Hello, World
+
+tests/test_greeting.py:5: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_greeting.py::test_hello - AssertionError: assert 'Hello, Wo...
+============================== 1 failed in 0.05s ===============================
+
+```
+
+今度はテストが動いた。
+
+
+#### IntelliJ IDEAのエディタでimportがエラーになる件
+
+もうひとつ、問題がある。IntelliJ IDEAのエディタでテストコードを開くとimportがエラーになっている。
+
+![import_error](docs/images/import_error.png)
+
+なぜエラーになるかというと、`$repos/pyproject/src` ディレクトリのなかにPythonコードが格納されていてその中に `mypkg` パッケージと `greeting` モジュールがあるということをIDEAがまだ認識していないからだ。
+
+IDEAのプロジェクト設定画面で Sources ディレクトリと Tests ディレクトリを指定することでこのエラーを解消することができる。
+
+IntelliJ IDEAを起動し、`PythonProjectTemplateLevel1`をプロジェクトとして開く。ツールバーで *File > Project Structure...* を選ぶ。 ダイアログのメニューで *Project Settings > Modules* を選ぶ。
+
+![mark_as_Sources](docs/images/mark_as_Sources.png)
+
+そして `$repos/pyproject/src` ディレクトリと `$repos/pyproject/tests` ディレクトリをマウスで洗濯したら 青いフォルダのアイコンのボタンを押す。こうすることによって二つのディレクトリがPythonコードのソースが格納されたディレクトリであることをIDEAに教えることができる。OKボタンを押して設定完了だ。これでimport文の下にあった赤い下線はなくなる。
+
+## まとめ
+
+以上でLevel1の準備作業をした。つまり
+
+1. pyenvでPython処理系を複数バージョン、Macにインストールした
+2. プロジェクトのディレクトリ構造を決めた
+3. pipenvで仮想環境を作り、その仮想環境に本プロジェクのための外部ライブラリをインストールした
+4. IntelliJ IDEAを使ってPythonコードを開発できるよう、IDEAを設定した
+5. pytestを使ってユニットテストを実行できるように準備した
 
 
 ## 補足
