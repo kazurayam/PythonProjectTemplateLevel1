@@ -431,6 +431,21 @@ Platform SDKの名前を `Python 3.8 (PythonProjectTemplateLevel1)` という風
 
 #### Project SDKとして登録する
 
+Platform SDKとして `Python 3.8 (PythonProjectTemplateLevel1)` を追加したが、それだけでは足りない。
+`PythonProjectTemplateLevel1` プロジェクトのProject SKDとしてこのPlatform SDKを選ぶという設定を加える必要がある。
+
+IntelliJ IDEAを起動し、`PythonProjectTemplateLevel1`をプロジェクトとして開く。ツールバーで *File > Project Structure...* を選ぶ。 ダイアログのメニューで *Project Settings > Project* を選ぶ。
+
+![Project_Settings](docs/images/Project_Settings.png)
+
+*Project SDK* にデフォルト値が設定されているが、これを書き替えたい。*Edit*ボタンを押せ。すると登録ずみのPlatform SDKのリストが表示される。リストの中から `Python 3.8 (PythonProjectTemplateLevel1)` を選べ。そしてOKせよ。
+
+![select_Project_SDK](docs/images/select_Project_SDK.png)
+
+これでIntelliJ IDEAの設定は完了だ。IDEAのなかで `PythonProjecdtTemplateLevel1` プロジェクトをそれ専用のPython仮想環境を使って開発することができる。
+
+
+
 
 ## 補足
 
