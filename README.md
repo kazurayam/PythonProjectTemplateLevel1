@@ -5,7 +5,8 @@
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**
+<details>
+<summary>Table of Contents</summary>
 
 - [これは何か](#%E3%81%93%E3%82%8C%E3%81%AF%E4%BD%95%E3%81%8B)
 - [前提条件](#%E5%89%8D%E6%8F%90%E6%9D%A1%E4%BB%B6)
@@ -24,6 +25,7 @@
     - [.envの自動読み込み](#env%E3%81%AE%E8%87%AA%E5%8B%95%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%81%BF)
     - [Pipfileからrequirements.txtを生成する](#pipfile%E3%81%8B%E3%82%89requirementstxt%E3%82%92%E7%94%9F%E6%88%90%E3%81%99%E3%82%8B)
 
+</details>
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## これは何か
