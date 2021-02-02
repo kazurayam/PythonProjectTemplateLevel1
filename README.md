@@ -3,9 +3,12 @@
 - @author kazurayam
 - @date Feb 2021
 
+<!-- START doctoc -->
+<!-- END doctoc -->
+
 ## これは何か
 
-Python言語でプログラムを自作したい。そのために環境を作り道具を揃えて使えるようにする必要がある。アプリケーションが何であれ環境と道具は概ね同じであり、繰り返し利用しつつ磨き上げていくものだ。Python初心者のわたしがやってきた環境と道具の準備作業を細かく記録しよう。結果としてさまざまなPythonプロジェクトの雛形を作ろう。
+Python言語でプログラムを自作したい。そのために環境を作り道具を揃えて使えるようにする必要がある。アプリケーションが何であれ環境と道具は概ね同じであり、繰り返し利用しつつ磨き上げていくものだ。Python初心者のわたしがやってきた準備作業を細かく記録しつつレポジトリとして保存しよう。さまざまなPythonプロジェクトの雛形として使えるだろう。
 
 Gitレポジトリを4つ作る。
 
@@ -324,6 +327,33 @@ $  . /Users/kazuakiurayama/.local/share/virtualenvs/pyproject-brTiVaad/bin/activ
 ```
 $ exit
 exit
+```
+
+#### .envの自動読み込み
+
+プロジェクトに `.env` ファイルを用意しておくと `pepenv run` や `pipenv shell` を実行するときに自動で読み込んでくれる。認証情報などハードコードするにはまずい情報を登録しておくのに便利。ただし `.gitignore` に書いて `.env` を除外するのを忘れずに。
+
+```.env
+username=John Doe
+password=ThisIsNotAPassword
+DEBUG=1
+```
+
+シェルの環境変数にDEBUGその他が追加されます。確認してみましょう。
+```
+$repos/pyproject $ 
+pipenv run python
+Loading .env environment variables...
+Python 3.8.5 (v3.8.5:580fbb018f, Jul 20 2020, 12:11:27) 
+[Clang 6.0 (clang-600.0.57)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import os
+>>> os.environ['DEBUG']
+'1'
+>>> os.environ['username']
+'John Doe'
+>>> os.environ['password']
+'ThisIsNotAPassword'
 ```
 
 #### Pipfileからrequirements.txtを生成する
