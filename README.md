@@ -385,3 +385,55 @@ $ pipenv run pip freeze > requirements.txt
 ```
 このテクニックを使えば外部依存ライブラリの管理をPipenvに一元化しつつ、pipコマンドでライブラリ化する作業をすることができます。
 
+
+
+
+
+### IntelliJ IDEAでPythonプロジェクトを開発する準備をする
+
+PythonProjectTemplateLevel1をIntelliJ IDEAで開発するための準備をしよう。IntelliJ IDEAのライセンスを購入しインストール済み、かつPython pluginがインストール済みであることを前提する。
+
+本プロジェクトのために作ったPython仮想環境をIntelliJ IDEAの中でも使いたい。そのためにはIDEAにそのPython仮想環境のありかを教え無ければならない。そのために二つの作業をする。
+
+1. IntelliJ IDEAに Platform SDK の一つとして追加登録する。
+1. IDEAでPythonProjectTemplateLevel1をプロジェクトとして開いたあとで当該プロジェクトの Project SDKとして、先に追加登録したPlatform SDKを選択する。
+
+#### Platform SDKとして追加する
+
+IntelliJ IDEAを起動する。ツールバーで *File > Project Structure...* を選ぶ。 ダイアログのメニューで *Platform Settings > SDKs* を選ぶ。Platform SDK として
+新しい仮想環境を追加したいので、＋ のボタンを押す。
+
+![PlatformSDKs_add](docs/images/PlatformSDKs_add.png)
+
+ドロップダウンメニューが表示されるので *Add Python SDK...* を選ぶ。
+
+![add_Python_SDK](docs/images/add_Python_SDK.png)
+
+*Add Python Interpreter* と題するダイアログが開く。
+
+![Add_Python_Interpreter](docs/images/Add_Python_Interpreter.png)
+
+ダイアログのメニューから *Virtualenv Environment* を選ぶ。 *New Environment* ではなく *Existing Environment* を選ぶ。*Interpreter* として本プロジェクトのために準備したPython仮想環境のなかの `python` を指定する。
+
+でも仮想環境ってどこにあるんだっけ？ ... 下記のコマンドで調べられる。
+```
+$repos/pyproject $ pipenv --venv
+/Users/myname/.local/share/virtualenvs/pyproject-brTiVaad
+```
+
+*Interpreter*としては pythonのバイナリファイルのパスを指定する必要がある。具体的にはこうだった。
+
+- Interpreter: `/Users/myname/.local/share/virtualenvs/pyproject-brTiVaad/bin/python`
+
+Platform SDKの名前を `Python 3.8 (PythonProjectTemplateLevel1)` という風に区別しやすい名前にした上でOKボタンを押せ。
+
+#### Project SDKとして登録する
+
+
+## 補足
+
+### READMEに目次をつけた
+
+[GitHubの本プロジェクトのREADME](https://github.com/kazurayam/PythonProjectTemplateLevel1)にTable of Contentsつまり目次をつけた。下記のページを参考にした。
+
+- https://dev.classmethod.jp/articles/auto-generate-toc-on-readme-by-actions/
